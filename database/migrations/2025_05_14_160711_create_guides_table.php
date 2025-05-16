@@ -16,14 +16,12 @@ return new class extends Migration
         Schema::create('guides', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('office_id');
             $table->string('position_name');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
-            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+           $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
 
         });
     }

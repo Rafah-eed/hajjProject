@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('guide_id');
             $table->enum('type', ['umrah', 'hajj'])->default('umrah');
             $table->string('regiment_name');
             $table->integer('days_num_makkah');
@@ -24,8 +23,6 @@ return new class extends Migration
             $table->date('start_date');
             $table->boolean('is_active');
             $table->timestamps();
-
-            $table->foreign('guide_id')->references('id')->on('guides')->onDelete('cascade');
 
         });
     }

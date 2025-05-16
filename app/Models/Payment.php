@@ -24,7 +24,7 @@ class Payment extends Model
     /**
      * Get the user that owns the Payment
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user(): BelongsTo
     {

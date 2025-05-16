@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('request_number');
             $table->timestamps();
 
-            $table->foreign('guide_id')->references('id')->on('guides')->onDelete('cascade');
+            $table->foreign('pilgrim_id')->references('id')->on('pilgrims')->onDelete('cascade');
             $table->foreign('trip_id')->references('id')->on('trips')->onDelete('cascade');
 
         });
