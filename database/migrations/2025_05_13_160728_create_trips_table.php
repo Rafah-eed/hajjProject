@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['umrah', 'hajj'])->default('umrah');
+            $table->enum('type', ['umrah', 'hajjQ','hajjT','hajjI'])->default('umrah'); /// الحج ممكن أن يكون حج إفراد أو قران أو تمتع
             $table->string('regiment_name');
             $table->integer('days_num_makkah');
             $table->integer('days_num_madinah');

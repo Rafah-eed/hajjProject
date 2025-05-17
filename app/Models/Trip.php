@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Trip extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'guide_id',
         'type',
         'regiment_name',
         'days_num_makkah',
@@ -38,5 +38,15 @@ class Trip extends Model
     public function trip_guides(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Trip_Guide::class);
+    }
+
+    /**
+     * Get the pilgrim associated with the User
+     *
+     * @return HasOne
+     */
+    public function hajjType(): HasOne
+    {
+        return $this->hasOne(HajjType::class);
     }
 }

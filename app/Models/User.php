@@ -50,7 +50,7 @@ class User extends Authenticatable
     /**
      * Get the pilgrim associated with the User
     *
-    * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    * @return HasOne
     */
     public function pilgrim(): HasOne
     {
@@ -61,7 +61,7 @@ class User extends Authenticatable
     /**
      * Get the guides associated with the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function guide(): HasOne
     {
@@ -71,7 +71,7 @@ class User extends Authenticatable
     /**
      * Get the employee associated with the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function employee(): HasOne
     {
@@ -81,7 +81,7 @@ class User extends Authenticatable
     /**
      * Get the office associated with the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function office(): HasOne
     {
@@ -91,7 +91,7 @@ class User extends Authenticatable
     /**
      * Get the payment associated with the User
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return HasOne
      */
     public function payment(): HasOne
     {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Pilgrim extends Model
 {
@@ -35,5 +36,15 @@ class Pilgrim extends Model
     public function visas(): HasMany
     {
         return $this->hasMany(Visa::class);
+    }
+
+    /**
+     * Get the pilgrim associated with the User
+     *
+     * @return HasOne
+     */
+    public function hajjType(): HasOne
+    {
+        return $this->hasOne(HajjType::class);
     }
 }
