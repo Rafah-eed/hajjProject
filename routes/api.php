@@ -29,3 +29,6 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh', 'refresh');
 
 });
+
+Route::apiResource('trips', TripController::class);
+Route::post('/trip/{trip_id}', [TripController::class, 'tripById']);
