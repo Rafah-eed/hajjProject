@@ -59,7 +59,7 @@ class TripPolicy
      *
      * @param User $user
      * @param Trip $trip
-     * @return Response|bool
+     * @return bool
      */
     public function update(User $user, Trip $trip)
     {
