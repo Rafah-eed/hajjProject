@@ -57,17 +57,6 @@ class User extends Authenticatable
         return $this->hasOne(pilgrim::class);
     }
 
-
-    /**
-     * Get the guides associated with the User
-     *
-     * @return HasOne
-     */
-    public function guide(): HasOne
-    {
-        return $this->hasOne(Guide::class);
-    }
-
     /**
      * Get the employee associated with the User
      *

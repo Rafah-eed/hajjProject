@@ -30,5 +30,7 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-Route::apiResource('trips', TripController::class);
-Route::post('/trip/{trip_id}', [TripController::class, 'tripById']);
+Route::middleware(['auth:sanctum', 'checkRole:admin'])->group(function () {
+    Route::apiResource('trips', TripController::class);
+    Route::post('/trip/{trip_id}', [TripController::class, 'tripById']);
+});

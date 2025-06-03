@@ -65,7 +65,7 @@ class AuthController extends BaseController
         }
     }
 
-    // For token-based auth (Sanctum)
+
     public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
         // Revoke the current token
@@ -73,6 +73,8 @@ class AuthController extends BaseController
 
         return response()->json(['message' => 'Logged out successfully.']);
     }
+
+
     public function refresh(): \Illuminate\Http\JsonResponse
     {
         $user = Auth::user();

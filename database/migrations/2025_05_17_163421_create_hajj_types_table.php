@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('hajj_types', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['Q', 'T', 'I'])->default('T');            $table->unsignedBigInteger('office_id');
+            $table->enum('type', ['Q', 'T', 'I'])->default('T');/// الحج ممكن أن يكون حج إفراد أو قران أو تمتع
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('pilgrim_id');;
             $table->timestamps();

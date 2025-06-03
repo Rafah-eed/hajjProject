@@ -20,10 +20,7 @@ class Office extends Model
      *
      *
      */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+
 
     public function empolyees(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
@@ -40,8 +37,8 @@ class Office extends Model
         return $this->hasMany(Present::class);
     }
 
-    public function guides(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function trips(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Guide::class);
+        return $this->hasMany(Trip::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Trip extends Model
@@ -11,13 +12,15 @@ class Trip extends Model
     use HasFactory;
 
     protected $fillable = [
+        'office_id',
         'type',
         'regiment_name',
         'days_num_makkah',
         'days_num_madinah',
         'price',
         'start_date',
-        'is_active'
+        'is_active',
+        'numOfReservations',
     ];
 
     public function visas(): \Illuminate\Database\Eloquent\Relations\HasMany
@@ -35,11 +38,6 @@ class Trip extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function trip_guides(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Trip_Guide::class);
-    }
-
     /**
      * Get the pilgrim associated with the User
      *
@@ -49,4 +47,16 @@ class Trip extends Model
     {
         return $this->hasOne(HajjType::class);
     }
+
+    public function trip_employees(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Trip_Employee::class);
+    }
+
+    public function office(): BelongsTo
+    {
+        return $this->belongsTo(Office::class);
+    }
+
+
 }

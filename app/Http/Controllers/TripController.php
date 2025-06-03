@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TripValidationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController as BaseController;
@@ -12,11 +13,6 @@ use Illuminate\Support\Facades\Log;
 class TripController extends BaseController
 {
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return JsonResponse
-     */
     public function index(): JsonResponse
     {
         $trip = Trip::all();
@@ -28,7 +24,7 @@ class TripController extends BaseController
 
     }
 
-        public function tripById($trip_id): JsonResponse
+    public function tripById($trip_id): JsonResponse
     {
         $trip = Trip::find($trip_id);
 
@@ -39,78 +35,41 @@ class TripController extends BaseController
 
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function store(Request $request): JsonResponse
+    public function store(TripValidationRequest $request): JsonResponse
     {
+        $validatedData = $request->validated();
 
-        $request->validate([
-            'type' => 'required|in:umrah,hajjQ,hajjT,hajjI',
-            'regiment_name' => 'required|string|max:255',
-            'days_num_makkah' => 'required|int|max:255',
-            'days_num_madinah' => 'required|int|max:255',
-            'price' => 'required|decimal|max:255',
-            'start_date' => 'required',
-            'is_active'  => 'required|boolean',
-        ]);
 
-        $trip = Trip::create([
-            'type' => $request->type,
-            'regiment_name' => $request->regiment_name,
-            'days_num_makkah' => $request->days_num_makkah,
-            'days_num_madinah' => $request->days_num_madinah,
-            'price' => $request->price,
-            'start_date' => $request->start_date,
-            'is_active' => $request->is_active,
-
-        ]);
+        $trip = Trip::create([$validatedData]);
 
         if ( is_null($trip))
+
             return $this->sendResponse(false,  "error in create" ,204);
 
         return $this->sendResponse($trip, "trip has been created");
 
     }
 
-    public function update(Request $request, Trip $trip): JsonResponse
+    public function update(TripValidationRequest $request, Trip $trip): JsonResponse
     {
-
-        $fields = $request->validate([
-            'type' => 'required|in:umrah,hajjQ,hajjT,hajjI',
-            'regiment_name' => 'required|string|max:255',
-            'days_num_makkah' => 'required|int|max:255',
-            'days_num_madinah' => 'required|int|max:255',
-            'price' => 'required|decimal|max:255',
-            'start_date' => 'required',
-            'is_active'  => 'required|boolean',
-        ]);
-
+        $validatedData = $request->validated();
 
         try {
-            $trip->update($fields);
+            $trip->update($validatedData);
         } catch (\Exception $e) {
             Log::error('Error updating trip: ' . $e->getMessage());
-            // Handle the error (e.g., return an error response)
         }
-
-        // $trip->station->attach($request->station_id);
 
         return $this->sendResponse($trip, "trip has been updated");
     }
 
-
     public function destroy(int $trip_id): JsonResponse
     {
         $trip = Trip::findOrFail($trip_id);
+
         $trip->delete();
 
-        return self::getResponse(true, "Trip and its related active records have been deleted", null, 200);
-    }
+        return $this->sendResponse($trip, "trip has been deleted");}
 
 
 

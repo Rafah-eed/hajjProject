@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('office_id');
             $table->unsignedBigInteger('user_id');
+            $table->string('position_name');
             $table->decimal('salary', 10, 2);
             $table->timestamps();
 

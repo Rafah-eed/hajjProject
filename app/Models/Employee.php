@@ -13,6 +13,7 @@ class Employee extends Model
     protected $fillable = [
         'office_id',
         'user_id',
+        'position_name',
         'salary'
     ];
 
@@ -29,5 +30,10 @@ class Employee extends Model
     public function office(): BelongsTo
     {
         return $this->belongsTo(Office::class);
+    }
+
+    public function trip_employees(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Trip_Employee::class);
     }
 }

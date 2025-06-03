@@ -11,18 +11,23 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['umrah', 'hajjQ','hajjT','hajjI'])->default('umrah'); /// الحج ممكن أن يكون حج إفراد أو قران أو تمتع
+            $table->unsignedBigInteger('office_id');
+            $table->enum('type', ['umrah', 'hajj'])->default('umrah');
             $table->string('regiment_name');
             $table->integer('days_num_makkah');
             $table->integer('days_num_madinah');
             $table->decimal('price');
             $table->date('start_date');
             $table->boolean('is_active');
+            $table->integer('numOfReservations');
             $table->timestamps();
+
+            $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
+
 
         });
     }
