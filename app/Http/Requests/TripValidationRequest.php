@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use JetBrains\PhpStorm\ArrayShape;
 
 class TripValidationRequest extends FormRequest
 {
@@ -21,10 +22,11 @@ class TripValidationRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    #[ArrayShape(['type' => "string", 'regiment_name' => "string", 'days_num_makkah' => "string", 'days_num_madinah' => "string", 'price' => "string", 'start_date' => "string", 'is_active' => "string"])] public function rules()
     {
         return [
-            'type' => 'required|in:umrah,hajjQ,hajjT,hajjI',
+            'office_id' => 'required|exists:offices,id',
+            'type' => 'required|in:umrah,hajj',
             'regiment_name' => 'required|string|max:255',
             'days_num_makkah' => 'required|int|max:255',
             'days_num_madinah' => 'required|int|max:255',

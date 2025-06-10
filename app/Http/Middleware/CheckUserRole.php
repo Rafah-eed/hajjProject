@@ -19,17 +19,12 @@ class CheckUserRole
      * @param $role
      * @return JsonResponse
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, $role=null): JsonResponse
     {
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
-        }
-
-        // Assuming your User model has a 'role' attribute
-        if ($user->role !== $role) {
-            return response()->json(['message' => 'Forbidden: Insufficient permissions'], 403);
+        if (! $user || ! $user->hasRole('admin')) {
+            return response()->json(['error' => 'Forbidden. Admins only.'], 403);
         }
 
         return $next($request);

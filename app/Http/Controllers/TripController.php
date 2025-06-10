@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Models\Trip;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 
 class TripController extends BaseController
@@ -40,7 +41,12 @@ class TripController extends BaseController
         $validatedData = $request->validated();
 
 
-        $trip = Trip::create([$validatedData]);
+        // Generate a random trip code
+        $randomCode = Str::padLeft(rand(100000, 999999), 5, '0');
+
+        // Create the trip with the generated code
+        $trip = Trip::create(array_merge($validatedData, ['trip_code' => $randomCode]));
+
 
         if ( is_null($trip))
 

@@ -20,8 +20,7 @@ class CheckOfficeAndAdmin
     {
         $user = Auth::user();
 
-        // Check if user is admin
-        if ($user->role !== 'admin') {
+        if (! $user || ! $user->hasRole('admin')) {
             return response()->json(['error' => 'Forbidden. Admins only.'], 403);
         }
 

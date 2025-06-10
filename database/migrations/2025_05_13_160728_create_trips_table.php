@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -24,7 +25,10 @@ return new class extends Migration
             $table->date('start_date');
             $table->boolean('is_active');
             $table->integer('numOfReservations');
-            $table->timestamps();
+            
+            $table->integer('trip_code')->nullable;
+            
+                $table->timestamps();
 
             $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
 

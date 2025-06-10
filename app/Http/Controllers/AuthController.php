@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\BaseController as BaseController;
 use Illuminate\Support\Facades\Validator;
@@ -15,25 +17,15 @@ class AuthController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function register(Request $request): \Illuminate\Http\JsonResponse
+    public function register(RegisterRequest $request): \Illuminate\Http\JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'email' => 'required|string|unique:users,email',
-            'password' => 'required|string',
-            'c_password' => 'required|same:password',
-            'phone_number' => 'required'
-        ]);
+        Log::info('Register request received:', ['data' => $request->all()]);
 
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
+        $input = $request->validated();
 
-        $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $token = $user->createToken('apiToken')->plainTextToken;
@@ -43,10 +35,8 @@ class AuthController extends BaseController
             'token' => $token
         ];
 
-
         return $this->sendResponse($success, 'User registered successfully.');
     }
-
 
     public function login(Request $request): \Illuminate\Http\JsonResponse
     {

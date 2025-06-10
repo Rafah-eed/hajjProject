@@ -12,9 +12,12 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
+        $this->call(OfficesTableSeeder::class);
         $this->call(TripTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
+
         // \App\Models\User::factory(10)->create();
     }
 }

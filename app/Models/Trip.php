@@ -21,6 +21,7 @@ class Trip extends Model
         'start_date',
         'is_active',
         'numOfReservations',
+        'trip_code'
     ];
 
     public function visas(): \Illuminate\Database\Eloquent\Relations\HasMany
