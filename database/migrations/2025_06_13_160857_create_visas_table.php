@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('pilgrim_id');
             $table->unsignedBigInteger('trip_id');
-            $table->string('visa_file');
+            $table->string('visa_file') ->nullable();
             $table->enum('status', ['await', 'accepted', 'refused'])->default('await');
-            $table->integer('request_number');
+            $table->integer('request_number')->default(1);
+    
             $table->timestamps();
 
             $table->foreign('pilgrim_id')->references('id')->on('pilgrims')->onDelete('cascade');

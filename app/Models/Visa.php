@@ -15,8 +15,7 @@ class Visa extends Model
         'trip_id',
         'visa_file',
         'status',
-        'request_number'
-
+        'request_number',
     ];
 
     /**

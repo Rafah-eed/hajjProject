@@ -12,7 +12,7 @@ class TripValidationRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -22,7 +22,8 @@ class TripValidationRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    #[ArrayShape(['type' => "string", 'regiment_name' => "string", 'days_num_makkah' => "string", 'days_num_madinah' => "string", 'price' => "string", 'start_date' => "string", 'is_active' => "string"])] public function rules()
+    #[ArrayShape(['office_id' => "string", 'type' => "string", 'regiment_name' => "string", 'days_num_makkah' => "string", 'days_num_madinah' => "string", 'price' => "string", 'start_date' => "string", 'is_active' => "string"])]
+    public function rules(): array
     {
         return [
             'office_id' => 'required|exists:offices,id',
@@ -33,6 +34,7 @@ class TripValidationRequest extends FormRequest
             'price' => 'required|numeric',
             'start_date' => 'required',
             'is_active'  => 'required|boolean',
+
         ];
     }
 }

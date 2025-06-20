@@ -75,8 +75,9 @@ class TripController extends BaseController
 
         $trip->delete();
 
-        return $this->sendResponse($trip, "trip has been deleted");}
+        return $this->sendResponse($trip, "trip has been deleted");
+    }
 
-
+    //TODO : CHECK TRIP STATE
 
 }

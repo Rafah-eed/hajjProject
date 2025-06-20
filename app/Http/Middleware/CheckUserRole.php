@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckUserRole
 {
@@ -16,17 +17,35 @@ class CheckUserRole
      *
      * @param Request $request
      * @param Closure $next
-     * @param $role
+     * @param $roles
      * @return JsonResponse
      */
-    public function handle(Request $request, Closure $next, $role=null): JsonResponse
+    public function handle(Request $request, Closure $next, $roles): JsonResponse
     {
-        $user = Auth::user();
+        Log::debug('Data type:', ['data_type' => gettype($roles)]);
 
-        if (! $user || ! $user->hasRole('admin')) {
-            return response()->json(['error' => 'Forbidden. Admins only.'], 403);
+        $user = auth()->user();
+
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $next($request);
+        if (is_string($roles)) {
+            $roles = explode('|', $roles);
+        }
+
+        if (!is_array($roles)) {
+            throw new \InvalidArgumentException('Roles must be an array or string separated by "|"');
+        }
+
+        foreach ($roles as $role) {
+            if (in_array($role, explode('|', $user->role))) {
+                return $next($request);
+            }
+        }
+
+        return response()->json(['error' => 'Forbidden'], 403);
+
     }
 }

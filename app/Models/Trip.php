@@ -39,16 +39,6 @@ class Trip extends Model
         return $this->hasMany(Payment::class);
     }
 
-    /**
-     * Get the pilgrim associated with the User
-     *
-     * @return HasOne
-     */
-    public function hajjType(): HasOne
-    {
-        return $this->hasOne(HajjType::class);
-    }
-
     public function trip_employees(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Trip_Employee::class);
@@ -59,5 +49,8 @@ class Trip extends Model
         return $this->belongsTo(Office::class);
     }
 
-
+    public function guides()
+    {
+        return $this->belongsToMany(Guide::class);
+    }
 }

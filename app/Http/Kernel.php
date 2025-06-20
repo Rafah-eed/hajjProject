@@ -66,5 +66,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'CheckUserRole' => \App\Http\Middleware\CheckUserRole::class,
         'CheckOfficeAndAdmin' => \App\Http\Middleware\CheckOfficeAndAdmin::class,
+        'combined' => \App\Http\Middleware\CheckUserRole::class,
+        'RetrievePilgrimGuideMiddleware'=> \App\Http\Middleware\RetrievePilgrimGuideMiddleware::class,
     ];
 }

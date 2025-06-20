@@ -45,6 +45,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    private mixed $roles;
 
 
     /**
@@ -52,7 +53,7 @@ class User extends Authenticatable
     *
     * @return HasOne
     */
-    public function pilgrim(): HasOne
+    public function pilgrims(): HasOne
     {
         return $this->hasOne(pilgrim::class);
     }
@@ -90,5 +91,15 @@ class User extends Authenticatable
     public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+/**
+     * Get the guide associated with the User
+     *
+     * @return HasOne
+     */
+    public function guide(): HasOne
+    {
+        return $this->hasOne(Guide::class);
     }
 }

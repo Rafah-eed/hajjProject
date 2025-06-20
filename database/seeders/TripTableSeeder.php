@@ -18,7 +18,7 @@ class TripTableSeeder extends Seeder
         DB::table('trips')->insert([
             [
                 'office_id' => 1,
-                'type' => 'umrah',
+                'type' => 'Umrah',
                 'regiment_name' => 'Al-Fatih Regiment',
                 'days_num_makkah' => 5,
                 'days_num_madinah' => 3,
@@ -32,7 +32,7 @@ class TripTableSeeder extends Seeder
             ],
             [
                 'office_id' => 2,
-                'type' => 'hajj',
+                'type' => 'HajjQ',
                 'regiment_name' => 'Al-Nour Regiment',
                 'days_num_makkah' => 7,
                 'days_num_madinah' => 4,
@@ -46,7 +46,7 @@ class TripTableSeeder extends Seeder
             ],
             [
                 'office_id' => 3,
-                'type' => 'umrah',
+                'type' => 'Umrah',
                 'regiment_name' => 'Baraka Regiment',
                 'days_num_makkah' => 4,
                 'days_num_madinah' => 2,

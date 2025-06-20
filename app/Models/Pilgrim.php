@@ -38,13 +38,4 @@ class Pilgrim extends Model
         return $this->hasMany(Visa::class);
     }
 
-    /**
-     * Get the pilgrim associated with the User
-     *
-     * @return HasOne
-     */
-    public function hajjType(): HasOne
-    {
-        return $this->hasOne(HajjType::class);
-    }
 }
