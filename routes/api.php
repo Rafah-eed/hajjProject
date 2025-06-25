@@ -53,8 +53,7 @@ Route::get('/office/{office_id}', [OfficeController::class, 'officeById']);
 // ADMIN AND OFFICE MANAGEMENT
 // ____________________________________________
 
-
-Route::middleware(['auth:sanctum', 'CheckUserRole:admin'])->group(function () {///// APIs for the office operations itself
+Route::middleware(['auth:sanctum',  'combined.check.user.or.office.admin'])->group(function () {///// APIs for the office operations itself
 
     Route::post('/office/store', [OfficeController::class, 'store']);
 
@@ -78,21 +77,8 @@ Route::middleware(['auth:sanctum', 'CheckUserRole:admin'])->group(function () {/
 
 });
 
-// Route::middleware(['auth:sanctum', 'CheckOfficeAndAdmin:admin', 'CheckUserRole:admin'])->group(function () {/// APIs for the office operations itself
-
-// Route::post('/Users/createPilgrim', [TripController::class, 'createPilgrim']);
-
-// });
-
-
-
 
 ///'user', 'guide', 'admin', 'superAdmin'
-
-
-///TODO middleware for guide and admin and super admin 
-// and check if the guide and user has he same trip_id
-// and view all users for a trip if he is the guide of it 
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     
@@ -111,11 +97,15 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::get('/trip/{trip_id}/pilgrims', [UserController::class, 'getPilgrimsByTripId'])  -> middleware([CheckOfficeAndAdmin::class]) ;
         
+        Route::post('/trip/addGuideToTrip', [UserController::class, 'addGuideToTrip']) -> middleware([CheckOfficeAndAdmin::class]) ;
+
+        Route::post('/Users/createGuide', [UserController::class, 'createGuide']) ;
+        
         Route::post('/Users/createPilgrim', [UserController::class, 'createPilgrim']) -> middleware([CheckOfficeAndAdmin::class]) ;
         
         Route::get('/getAllOfficeEmployees/{trip_id}', [UserController::class, 'getAllOfficeEmployees']) -> middleware([CheckOfficeAndAdmin::class]) ;
 
-    
+        
     
     
     

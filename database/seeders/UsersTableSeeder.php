@@ -41,6 +41,14 @@ class UsersTableSeeder extends Seeder
                 'phone_number' => '5551234567',
                 'role' => 'admin'
             ],
+            [
+                'first_name' => 'admin',
+                'last_name' => 'adminn',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin'), // always hash passwords
+                'phone_number' => '123456789',
+                'role' => 'superAdmin'
+            ],
         ]);
     }
 }

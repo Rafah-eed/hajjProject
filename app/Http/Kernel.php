@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'CheckOfficeAndAdmin' => \App\Http\Middleware\CheckOfficeAndAdmin::class,
         'combined' => \App\Http\Middleware\CheckUserRole::class,
         'RetrievePilgrimGuideMiddleware'=> \App\Http\Middleware\RetrievePilgrimGuideMiddleware::class,
+        'combined.check.user.or.office.admin' => CombinedCheckUserOrOfficeAdmin::class,
     ];
 }

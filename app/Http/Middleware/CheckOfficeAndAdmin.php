@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Employee;
 
+use App\Models\Guide;
 use App\Models\Trip;
 use App\Models\User;
 use Closure;
@@ -34,12 +35,17 @@ class CheckOfficeAndAdmin
         $employee = Employee::where('user_id', $user->id)->first();
         Log::info("Found employee: ", ['employee' => $employee]);
 
-        if (!$employee) {
-            return response()->json(['error' => 'Forbidden. Employee record not found'], 403);
+        $guide = Guide::where('user_id', $user->id)->first();
+        Log::info("Found guide: ", ['guide' => $guide]);
+
+
+
+        if (!$employee ||!$guide) {
+            return response()->json(['error' => 'Forbidden. Employee Or Guide record not found'], 403);
         }
 
         // Check if the employee's office_id matches the requested office_id
-        if ($employee->office_id !== $trip->office_id ) {
+        if ($employee->office_id !== $trip->office_id || $guide->office_id !== $trip->office_id ) {
             return response()->json(['error' => 'Forbidden. Not authorized for this office'], 403);
         }
 

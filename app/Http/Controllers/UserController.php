@@ -95,12 +95,33 @@ class UserController extends BaseController
 
     public function getAllOfficeEmployees(int $office_id) /// GET all employees working in a specific office
     {
-        //
-    }
+        try {
 
-     public function getAllOfficeEmployeesInTrip(int $trip_id, int $office_id) /// GET all employees working in a specific office working in a specific trip
-    {
-        //
+            $user = Auth::user();
+
+        if (!$user || !$user->id) {
+            return response()->json(['error' => 'Unauthorized'], 404);
+        }
+
+            $pilgrim = Pilgrim::where('user_id', $user->id)->first();
+
+            if (!$pilgrim) {
+                return response()->json(['error' => 'No pilgrim found for this user'], 404);
+            }
+
+        $visa = Visa::where('pilgrim_id', $pilgrim->id)->first();
+
+        $tripId= $visa->trip_id;
+
+        // Get all guides associated with the trip
+        $guides = Guide::where('trip_id', $tripId)->first();
+
+        return $this->sendResponse($guides, "All guides for the trip have been retrieved successfully");
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching guide data', ['error' => $e->getMessage()]);
+            return $this->sendError('Error fetching guide data', $e->getMessage());
+        }
     }
 
     public function getMyGuide(): JsonResponse
@@ -136,6 +157,53 @@ class UserController extends BaseController
 
 
     //TODO : CREATE PILGRIM AND EMPLOYEE
+
+    public function createGuide(Request $request)
+    {
+        try{
+            $user = Auth::user();
+
+            if (!$user || !$user->id) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            $employee = Employee::where('user_id', $user->id)->first();
+
+            if (!$employee) {
+                return response()->json(['error' => 'Employee not found'], 404);
+            }
+
+            $guideId = $request->input('user_id');
+
+            if (!$guideId) {
+                return response()->json(['error' => 'Please provide the Guide user_id'], 400);
+            }
+
+            // Assuming you want to create or update the guide here
+            $guide = Guide::updateOrCreate(
+                ['user_id' => $guideId],
+                ['office_id' => $employee->office_id]
+            );
+
+            return $this->sendResponse($guide, "Guide has been created/updated successfully");
+
+    } catch (\Exception $e) {
+        Log::error('Error creating/updating guide', ['error' => $e->getMessage()]);
+        return $this->sendError('Error creating/updating guide', $e->getMessage(), 500);
+    }
+
+    }
+
+    public function addGuideToTrip(Request $request)
+    {
+
+    }
+
+    public function createEmployee()
+    {
+        //
+    }
+
 
     /**
      * Show the form for creating a new resource.
