@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Guide;
 use App\Models\Pilgrim;
 use App\Models\Trip;
@@ -312,10 +313,10 @@ class UserController extends BaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         //
     }
@@ -327,7 +328,7 @@ class UserController extends BaseController
      * @param  int  $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): Response
     {
         //
     }
@@ -338,7 +339,7 @@ class UserController extends BaseController
      * @param  int  $id
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($id): Response
     {
         //
     }
