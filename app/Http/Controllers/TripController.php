@@ -56,11 +56,13 @@ class TripController extends BaseController
 
     }
 
-    public function update(TripValidationRequest $request, Trip $trip): JsonResponse
+    public function update(TripValidationRequest $request, $trip_id): JsonResponse
     {
         $validatedData = $request->validated();
 
         try {
+            $trip = Trip::findOrFail($trip_id);
+
             $trip->update($validatedData);
         } catch (\Exception $e) {
             Log::error('Error updating trip: ' . $e->getMessage());
@@ -71,13 +73,18 @@ class TripController extends BaseController
 
     public function destroy(int $trip_id): JsonResponse
     {
-        $trip = Trip::findOrFail($trip_id);
+        try {
+            $trip = Trip::findOrFail($trip_id);
 
-        $trip->delete();
+            $trip->delete();
+        }
+        catch (\Exception $e) {
+            Log::error('Error deleting trip: ' . $e->getMessage());
+        }
 
-        return $this->sendResponse($trip, "trip has been deleted");
+        return $this->sendResponse("delete", "trip has been deleted");
     }
 
-    //TODO : CHECK TRIP STATE
+    //TODO : CHECK TRIP STATE, Trip rating, userRATING
 
 }

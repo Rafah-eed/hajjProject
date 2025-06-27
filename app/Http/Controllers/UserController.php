@@ -94,7 +94,7 @@ class UserController extends BaseController
     }
 
 
-    public function getAllOfficeEmployees(int $office_id) /// GET all employees working in a specific office
+    public function getAllOfficeEmployees(int $office_id): JsonResponse /// GET all employees working in a specific office
     {
         try {
 
@@ -159,7 +159,7 @@ class UserController extends BaseController
 
     //TODO : CREATE PILGRIM AND EMPLOYEE
 
-    public function createGuide(Request $request)
+    public function createGuide(Request $request): JsonResponse
     {
         try{
             $user = Auth::user();
@@ -205,16 +205,6 @@ class UserController extends BaseController
         //
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -299,48 +289,5 @@ class UserController extends BaseController
 
 
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return Response
-     */
-    public function edit(int $id): Response
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param Request $request
-     * @param  int  $id
-     * @return Response
-     */
-    public function update(Request $request, $id): Response
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id): Response
-    {
-        //
-    }
 }

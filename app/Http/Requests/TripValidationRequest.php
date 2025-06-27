@@ -26,14 +26,16 @@ class TripValidationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'office_id' => 'required|exists:offices,id',
             'type' => 'required|in:umrah,hajj',
             'regiment_name' => 'required|string|max:255',
-            'days_num_makkah' => 'required|int|max:255',
-            'days_num_madinah' => 'required|int|max:255',
+            'days_num_makkah' => 'required|integer|max:255',
+            'days_num_madinah' => 'required|integer|max:255',
             'price' => 'required|numeric',
-            'start_date' => 'required',
-            'is_active'  => 'required|boolean',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'is_active' => 'required|boolean',
+            'numOfReservations' => 'integer|min:0',
+            'trip_code' => 'integer',
 
         ];
     }

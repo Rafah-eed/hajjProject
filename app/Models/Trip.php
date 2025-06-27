@@ -19,6 +19,7 @@ class Trip extends Model
         'days_num_madinah',
         'price',
         'start_date',
+        'end_date',
         'is_active',
         'numOfReservations',
         'trip_code'

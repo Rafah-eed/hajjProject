@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
         $this->call(OfficesTableSeeder::class);
         $this->call(TripTableSeeder::class);
         $this->call(UsersTableSeeder::class);
+        $this->call(HajjTypeSeeder::class);
+        $this->call(HotelSeeder::class);
+        $this->call(PrayerSeeder::class);
 
         // \App\Models\User::factory(10)->create();
     }

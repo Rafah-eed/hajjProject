@@ -37,4 +37,10 @@ class Visa extends Model
     {
         return $this->belongsTo(Trip::class);
     }
+
+
+    public function hajj_type(): BelongsTo
+    {
+        return $this->belongsTo(hajj_type::class);
+    }
 }

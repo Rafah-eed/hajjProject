@@ -1,114 +1,124 @@
-<?php
+    <?php
 
-use App\Http\Middleware\CheckOfficeAndAdmin;
-use App\Http\Middleware\CheckUserRole;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TripController;
-use App\Http\Controllers\OfficeController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+    use App\Http\Controllers\HotelController;
+    use App\Http\Controllers\PrayerController;
+    use App\Http\Middleware\CheckOfficeAndAdmin;
+    use App\Http\Middleware\CheckUserRole;
+    use App\Http\Controllers\AuthController;
+    use App\Http\Controllers\TripController;
+    use App\Http\Controllers\OfficeController;
+    use App\Http\Controllers\UserController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+    use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    /*
+    |--------------------------------------------------------------------------
+    | API Routes
+    |--------------------------------------------------------------------------
+    |
+    | Here is where you can register API routes for your application. These
+    | routes are loaded by the RouteServiceProvider within a group which
+    | is assigned the "api" middleware group. Enjoy building your API!
+    |
+    */
 
-
-
-Route::controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
-    Route::post('register', 'register');
-    Route::post('logout', 'logout');
-    Route::post('refresh', 'refresh');
-
-});
-
-
-// ALL USERS ROUTES
-// ___________________________________________
-
-Route::get('/trips', [TripController::class, 'index']);
-Route::get('/trip/{trip_id}', [TripController::class, 'tripById']);
-
-Route::get('/offices', [OfficeController::class, 'index']);
-Route::get('/office/{office_id}', [OfficeController::class, 'officeById']);
-
-
-////todo : >>>>
-// Route::get('/Users/tripCode', [TripController::class, 'tripCode']);
+    //General Routes
+    Route::get('/prayer/{prayer}', [PrayerController::class, 'getPrayerByID']);
+    Route::get('/trips', [TripController::class, 'index']);
+    Route::get('/trip/{trip_id}', [TripController::class, 'tripById']);
+    Route::get('/offices', [OfficeController::class, 'index']); //no
+    Route::get('/office/{office_id}', [OfficeController::class, 'officeById']);
+    Route::get('/office/hotel/{hotel_id}', [HotelController::class, 'hotelById']);
+    Route::get('/office/hotels/{hotel}/room-types', [HotelController::class, 'GetAllRoomTypesForHotel']);
+    Route::get('/office/hotels/{hotel}/room-types/{room}', [HotelController::class, 'GetPriceRoomTypeForHotel']);
+    Route::get('/prayers', [PrayerController::class, 'index']);
 
 
 
-// ADMIN AND OFFICE MANAGEMENT
-// ____________________________________________
-
-Route::middleware(['auth:sanctum',  'combined.check.user.or.office.admin'])->group(function () {///// APIs for the office operations itself
-
-    Route::post('/office/store', [OfficeController::class, 'store']);
-
-    Route::get('/office/{office}', [OfficeController::class, 'show']);
-
-    Route::put('/office/{office_id}', [OfficeController::class, 'update']);
-
-    Route::delete('/office/{office}', [OfficeController::class, 'destroy']);
-
-    Route::post('/office/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
 
 
-    Route::post('/trip/store', [TripController::class, 'store']) -> middleware([CheckOfficeAndAdmin::class]);
 
-    Route::get('/trip/{trip}', [TripController::class, 'show']);
-
-    Route::put('/trip/{trip}', [TripController::class, 'update']) -> middleware([CheckOfficeAndAdmin::class]);
-
-    Route::delete('/trip/{trip}', [TripController::class, 'destroy']) -> middleware([CheckOfficeAndAdmin::class]);
-
-
-});
+    Route::controller(AuthController::class)->group(function () {
+        Route::post('login', 'login');
+        Route::post('register', 'register');
+        Route::post('logout', 'logout');
+        Route::post('refresh', 'refresh');
+    });
 
 
-///'user', 'guide', 'admin', 'superAdmin'
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::get('/user', function (Request $request) {
+                return $request->user();
+            });
+    });
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
-    
-    Route::get('/getMyGuide', [UserController::class, 'getMyGuide']);
 
-});
 
-Route::middleware('auth:sanctum')->group(function () {
-    
+
+
+
+
+
+    // ALL USERS ROUTES
     $roles = ['guide', 'admin', 'superAdmin'];
     $middlewareName = implode('|', $roles);
 
-    Route::middleware("combined:$middlewareName")->group(function () {
-    
-        Route::get('/getAllPilgrims', [UserController::class, 'getAllPilgrims']);
-        
-        Route::get('/trip/{trip_id}/pilgrims', [UserController::class, 'getPilgrimsByTripId'])  -> middleware([CheckOfficeAndAdmin::class]) ;
-        
-        Route::post('/trip/addGuideToTrip', [UserController::class, 'addGuideToTrip']) -> middleware([CheckOfficeAndAdmin::class]) ;
+    Route::middleware(['auth:sanctum', $middlewareName])->group(function () {
+        Route::get('/getMyGuide', [UserController::class, 'getMyGuide']);
 
-        Route::post('/Users/createGuide', [UserController::class, 'createGuide']) ;
-        
-        Route::post('/Users/createPilgrim', [UserController::class, 'createPilgrim']) -> middleware([CheckOfficeAndAdmin::class]) ;
-        
-        Route::get('/getAllOfficeEmployees/{trip_id}', [UserController::class, 'getAllOfficeEmployees']) -> middleware([CheckOfficeAndAdmin::class]) ;
-
-        
-    
-    
-    
-    
     });
-});
+
+
+
+
+
+
+
+
+
+
+
+    // ADMIN AND OFFICE MANAGEMENT
+    $adminRoles = ['admin', 'superAdmin'];
+    $middlewareNameAdmin = implode('|', $adminRoles);
+
+    Route::middleware(['auth:sanctum', 'CheckOfficeAndAdmin:$middlewareNameAdmin'])->group(function () {
+        // APIs for office operations
+        Route::get('/office/{office_id}', [OfficeController::class, 'findOfficeById']);
+        Route::post('/office/{office_id}/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
+
+        // Trip-related APIs
+        Route::post('/{office_id}/trip/store', [TripController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::put('/{office_id}/trip/{trip_id}', [TripController::class, 'update'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::delete('/{office_id}/trip/{trip_id}', [TripController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);
+
+        // Hotel-related APIS
+        Route::post('/{office_id}/hotel/store', [HotelController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);;
+        Route::put('/{office_id}/hotel/{hotel_id}', [HotelController::class, 'update'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::delete('/{office_id}/hotel/{hotel_id}', [HotelController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::get('/{office_id}/hotels', [HotelController::class, 'index'])->middleware([CheckOfficeAndAdmin::class]);
+
+
+
+    });
+
+
+
+
+
+
+
+    // SUPER ADMIN MANAGEMENT
+    Route::middleware(['auth:sanctum', 'CheckOfficeAndAdmin:superAdmin'])->group(function () {
+        // APIs for prayer operations
+        Route::post('/prayer/store', [PrayerController::class, 'store']);
+        Route::put('/prayer/{prayer_id}', [PrayerController::class, 'update']);
+        Route::delete('/prayer/{prayer}', [PrayerController::class, 'destroy']);
+
+        // APIs for office operations
+        Route::post('/office/store', [OfficeController::class, 'store']);
+        Route::put('/office/{office_id}', [OfficeController::class, 'update']);
+        Route::delete('/office/{office}', [OfficeController::class, 'destroy']);
+
+    });

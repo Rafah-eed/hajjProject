@@ -36,16 +36,32 @@ class UsersTableSeeder extends Seeder
             [
                 'first_name' => 'Safaa',
                 'last_name' => 'Johnson',
-                'email' => 'safaa@example.com',
-                'password' => Hash::make('safaa'),
+                'email' => 'admin@example.com',
+                'password' => Hash::make('admin'),
                 'phone_number' => '5551234567',
                 'role' => 'admin'
             ],
             [
+                'first_name' => 'Safaa',
+                'last_name' => 'Johnson',
+                'email' => 'guide@example.com',
+                'password' => Hash::make('guide'),
+                'phone_number' => '5551234567',
+                'role' => 'guide'
+            ],
+            [
+                'first_name' => 'Safaa',
+                'last_name' => 'Johnson',
+                'email' => 'user@example.com',
+                'password' => Hash::make('user'),
+                'phone_number' => '5551234567',
+                'role' => 'user'
+            ],
+            [
                 'first_name' => 'admin',
-                'last_name' => 'adminn',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('admin'), // always hash passwords
+                'last_name' => 'admin',
+                'email' => 'superadmin@example.com',
+                'password' => Hash::make('superadmin'), // always hash passwords
                 'phone_number' => '123456789',
                 'role' => 'superAdmin'
             ],
