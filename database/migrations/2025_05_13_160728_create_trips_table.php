@@ -26,12 +26,15 @@ return new class extends Migration
             $table->date('end_date');
             $table->boolean('is_active');
             $table->integer('numOfReservations')->nullable();
+            $table->integer('enrollNum')->nullable();
             $table->integer('trip_code');
 
             $table->timestamps();
 
             $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
 
+
+            // TODO: NUM OF RESERVATIONS
 
         });
     }

@@ -29,6 +29,11 @@ class Office extends Model
         return $this->hasMany(Employee::class);
     }
 
+    public function transports(): HasMany
+    {
+        return $this->hasMany(Transport::class);
+    }
+
     public function landmarks(): HasMany
     {
         return $this->hasMany(Landmark::class);

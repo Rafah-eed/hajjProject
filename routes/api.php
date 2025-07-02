@@ -8,6 +8,8 @@
     use App\Http\Controllers\TripController;
     use App\Http\Controllers\OfficeController;
     use App\Http\Controllers\UserController;
+    use App\Http\Controllers\TransportationController;
+
 
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
@@ -33,6 +35,8 @@
     Route::get('/office/hotels/{hotel}/room-types', [HotelController::class, 'GetAllRoomTypesForHotel']);
     Route::get('/office/hotels/{hotel}/room-types/{room}', [HotelController::class, 'GetPriceRoomTypeForHotel']);
     Route::get('/prayers', [PrayerController::class, 'index']);
+    Route::get('/office/transport/{transport_id}', [TransportationController::class, 'getTransportByID']);
+    Route::get('/office/transport/seatsForTransport/{transport_id}', [TransportationController::class, 'getSeatsForTransport']);
 
 
 
@@ -94,10 +98,20 @@
         Route::delete('/{office_id}/trip/{trip_id}', [TripController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);
 
         // Hotel-related APIS
-        Route::post('/{office_id}/hotel/store', [HotelController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);;
+        Route::post('/{office_id}/hotel/store', [HotelController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);
         Route::put('/{office_id}/hotel/{hotel_id}', [HotelController::class, 'update'])->middleware([CheckOfficeAndAdmin::class]);
         Route::delete('/{office_id}/hotel/{hotel_id}', [HotelController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);
         Route::get('/{office_id}/hotels', [HotelController::class, 'index'])->middleware([CheckOfficeAndAdmin::class]);
+
+
+        //Transport_related and seat APIS
+        Route::post('/office/{office_id}/transport/store', [TransportationController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::put('/office/{office_id}/transport/{transport_id}', [TransportationController::class, 'update'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::delete('/office/{office_id}/transport/{transport_id}', [TransportationController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);
+
+        Route::post('/office/{office_id}/transport_seat/store', [TransportationController::class, 'storeSeat'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::put('/office/{office_id}/update/transport_seat/{transport_seat_id}', [TransportationController::class, 'updateSeat'])->middleware([CheckOfficeAndAdmin::class]);
+        Route::delete('/office/{office_id}/transport_seat/{transport_seat_id}', [TransportationController::class, 'destroySeat'])->middleware([CheckOfficeAndAdmin::class]);
 
 
 
@@ -120,5 +134,9 @@
         Route::post('/office/store', [OfficeController::class, 'store']);
         Route::put('/office/{office_id}', [OfficeController::class, 'update']);
         Route::delete('/office/{office}', [OfficeController::class, 'destroy']);
+
+        //APIS for transportation and seats
+        Route::get('/transports', [TransportationController::class, 'index']);
+
 
     });

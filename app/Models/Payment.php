@@ -41,9 +41,9 @@ class Payment extends Model
         return $this->belongsTo(Room::class);
     }
 
-    public function transport(): BelongsTo
+    public function transport_seat(): BelongsTo
     {
-        return $this->belongsTo(Transport::class);
+        return $this->belongsTo(TransportSeat::class);
     }
 
 }

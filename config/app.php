@@ -191,6 +191,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'TransportSeat' => App\Models\TransportSeat::class,
         // ...
     ])->toArray(),
 
