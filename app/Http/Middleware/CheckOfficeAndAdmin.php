@@ -49,7 +49,14 @@ class CheckOfficeAndAdmin
             return response()->json(['error' => 'Forbidden. Employee Or Guide record not found'], 403);
         }
 
-        if ($guide && $guide->office_id !== $officeId || $employee && $employee->office_id !== $officeId) {
+        Log::info("Checking office authorization", [
+            'user_role' => $user->role,
+            'office_id' => $officeId,
+            'guide_office_id' => $guide?->office_id ?? null,
+            'employee_office_id' => $employee?->office_id ?? null
+        ]);
+        
+        if ((!$guide || $guide->office_id === $officeId) && (!$employee || $employee->office_id === $officeId)) {
             return response()->json(['error' => 'Forbidden. Not authorized for this office'], 403);
         }
 

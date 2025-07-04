@@ -26,6 +26,7 @@ class TripValidationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'office_id' => 'required',
             'type' => 'required|in:umrah,hajj',
             'regiment_name' => 'required|string|max:255',
             'days_num_makkah' => 'required|integer|max:255',
