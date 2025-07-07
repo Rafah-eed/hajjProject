@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Trip extends Model
@@ -25,22 +26,22 @@ class Trip extends Model
         'trip_code'
     ];
 
-    public function visas(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function visas(): HasMany
     {
         return $this->hasMany(Visa::class);
     }
 
-    public function trip_presents(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function trip_presents(): HasMany
     {
         return $this->hasMany(Trip_Present::class);
     }
 
-    public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function trip_employees(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function trip_employees(): HasMany
     {
         return $this->hasMany(Trip_Employee::class);
     }
@@ -50,8 +51,18 @@ class Trip extends Model
         return $this->belongsTo(Office::class);
     }
 
-    public function guides()
+    public function guides(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Guide::class);
+    }
+
+    public function transport_trips(): HasMany
+    {
+        return $this->hasMany(TransportTrip::class);
+    }
+
+    public function hotel_trips(): HasMany
+    {
+        return $this->hasMany(HotelTrip::class);
     }
 }

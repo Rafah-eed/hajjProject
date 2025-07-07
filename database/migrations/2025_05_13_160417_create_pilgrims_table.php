@@ -17,15 +17,16 @@ return new class extends Migration
         Schema::create('pilgrims', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->date('birth_date'); // Add birth date
+            $table->string('health_state')->nullable()->default("بصحة جيدة"); 
             $table->string('passport_photo');
-
-            $table->integer('pilgrim_code')->nullable;
-
+            $table->string('personal_identity'); // Add personal identity number or code
+            $table->string('personal_photo'); // Add personal photo (path or filename)
+            
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
-
+            
         });
     }
 

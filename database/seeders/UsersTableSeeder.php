@@ -66,5 +66,33 @@ class UsersTableSeeder extends Seeder
                 'role' => 'superAdmin'
             ],
         ]);
+        DB::table('guides')->insert([
+            [
+                'user_id' => '4',
+                'office_id' => '1',
+                'trip_id' => '1'
+            ],
+            [
+                'user_id' => '4',
+                'office_id' => '1',
+                'trip_id' => '2'
+            ],
+            
+        ]);
+        DB::table('employees')->insert([
+            [
+                'office_id' => '1',
+                'user_id' => '1',
+                'position_name' => 'reception',
+                'salary' => '1000.00',
+            ],
+            [
+                'office_id' => '2',
+                'user_id' => '2',
+                'position_name' => 'office_person',
+                'salary' => '1000.00',
+            ],
+            
+        ]);
     }
 }

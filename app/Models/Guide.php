@@ -26,8 +26,18 @@ class Guide extends Model
         return $this->belongsTo(Office::class);
     }
 
-    public function trips()
+    public function trips(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Trip::class);
+    }
+
+    public function rateGuides(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RateGuide::class);
+    }
+
+    public function rateTrips(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RateTrip::class);
     }
 }

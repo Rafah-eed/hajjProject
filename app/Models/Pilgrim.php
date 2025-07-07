@@ -14,8 +14,12 @@ class Pilgrim extends Model
 
     protected $fillable = [
         'user_id',
+        'birth_date',
+        'health_state',
         'passport_photo',
-        'pilgrim_code'
+        'personal_identity',
+        'personal_photo',
+    
     ];
 
     /**

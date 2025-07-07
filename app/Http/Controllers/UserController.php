@@ -70,7 +70,6 @@ class UserController extends BaseController
                         'email' => $pilgrim->user->email,
                         'phone_number' => $pilgrim->user->phone_number,
                         'passport_photo' => $pilgrim->passport_photo,
-                        'pilgrim_code' => $pilgrim->pilgrim_code,
                         'created_at' => $pilgrim->created_at,
                         'updated_at' => $pilgrim->updated_at
                     ];
@@ -157,54 +156,6 @@ class UserController extends BaseController
     }
 
 
-    //TODO : CREATE PILGRIM AND EMPLOYEE
-
-    public function createGuide(Request $request): JsonResponse
-    {
-        try{
-            $user = Auth::user();
-
-            if (!$user || !$user->id) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            $employee = Employee::where('user_id', $user->id)->first();
-
-            if (!$employee) {
-                return response()->json(['error' => 'Employee not found'], 404);
-            }
-
-            $guideId = $request->input('user_id');
-
-            if (!$guideId) {
-                return response()->json(['error' => 'Please provide the Guide user_id'], 400);
-            }
-
-            // Assuming you want to create or update the guide here
-            $guide = Guide::updateOrCreate(
-                ['user_id' => $guideId],
-                ['office_id' => $employee->office_id]
-            );
-
-            return $this->sendResponse($guide, "Guide has been created/updated successfully");
-
-    } catch (\Exception $e) {
-        Log::error('Error creating/updating guide', ['error' => $e->getMessage()]);
-        return $this->sendError('Error creating/updating guide', $e->getMessage(), 500);
-    }
-
-    }
-
-    public function addGuideToTrip(Request $request)
-    {
-
-    }
-
-    public function createEmployee()
-    {
-        //
-    }
-
 
     /**
      * Store a newly created resource in storage.
@@ -214,80 +165,105 @@ class UserController extends BaseController
      */
 
 
+
+
     public function createPilgrim(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
+            $user_id = $user->id;
 
-            // Generate a random 5-digit code
-            $randomCode = rand(10000, 99999);
-
-            // Validate request
+             // Validate data with correct rules
             $validatedData = $request->validate([
-                'user_id' => 'required|integer|exists:users,id', // Ensure user_id exists in users table
+                'birth_date' => 'required|date',
+                'health_state' => 'nullable|string|max:255',
+                'personal_identity' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
+                'personal_photo' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
                 'passport_photo' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
-                'trip_id' => 'nullable|integer',
-                'visa_file' => 'nullable|image|mimes:pdf|max:2048',
+                'trip_id' => 'required|integer',
+                'visa_file' => 'nullable|file|mimes:pdf,jpg,png,jpeg,gif|max:2048',
                 'status' => 'nullable|string|max:255',
-
             ]);
 
-            // Create pilgrim record with random code
-            $pilgrim = Pilgrim::create([
-                'passport_photo' => $validatedData['passport_photo'],
-                'pilgrim_code' => $randomCode,
-                'user_id' => $validatedData['user_id']
-            ]);
-
-            // Store passport photo
+             // Handle passport photo upload
+            $passportPhotoPath = null;
             if ($request->hasFile('passport_photo')) {
                 $uniqueFilename = uniqid() . '.' . $request->file('passport_photo')->getClientOriginalExtension();
-                $path = Storage::putFileAs('public/pilgrims', $request->file('passport_photo'), $uniqueFilename);
-                $pilgrim->update(['passport_photo' => $path]);
+                $passportPhotoPath = Storage::putFileAs('public/pilgrims', $request->file('passport_photo'), $uniqueFilename);
+            } else {
+                throw new \Exception('Passport photo is required.');
             }
 
+             // Handle personal photo upload
+             $personalPhotoPath = null;
+             if ($request->hasFile('personal_photo')) {
+                 $uniqueFilename = uniqid() . '.' . $request->file('personal_photo')->getClientOriginalExtension();
+                 $personalPhotoPath = Storage::putFileAs('public/pilgrims', $request->file('personal_photo'), $uniqueFilename);
+             } else {
+                 throw new \Exception('Personal photo is required.');
+             }
 
-            // Create visa record associated with pilgrim
-            $visa = Visa::create([
-                'pilgrim_id' => $pilgrim->id,
-                'trip_id' => $validatedData['trip_id'] ?? null,
-                'visa_file' => $validatedData['visa_file'] ?? null,
-                'status' => $validatedData['status'] ?? 'await',
-                'request_number' => $validatedData['request_number'] ?? '1',
-            ]);
+             // Save 'personal_identity' as string
+             $personal_identity_value = $validatedData['personal_identity'];
 
-             // Store visa file
-            if ($request->hasFile('visa_file') && !is_null($visa)) {
-                $uniqueVisaFilename = uniqid() . '.' . $request->file('visa_file')->getClientOriginalExtension();
-                $path = Storage::putFileAs('public/visas', $request->file('visa_file'), $uniqueVisaFilename);
-                $visa->update(['visa_file' => $path]);
+             // Create pilgrim record
+             $pilgrim = Pilgrim::create([
+                 'user_id' => $user_id,
+                 'birth_date' => $validatedData['birth_date'],
+                 'health_state' => $validatedData['health_state'],
+                 'personal_identity' => $personal_identity_value,
+                 'passport_photo' => $passportPhotoPath,
+                 'personal_photo' => $personalPhotoPath,
+             ]);
+
+             // Handle visa file upload if present
+             $visaFilePath = null;
+             if ($request->hasFile('visa_file')) {
+                 $uniqueVisaFilename = uniqid() . '.' . $request->file('visa_file')->getClientOriginalExtension();
+                 $visaFilePath = Storage::putFileAs('public/visas', $request->file('visa_file'), $uniqueVisaFilename);
+             }
+
+             // Create visa record
+             $visa = Visa::create([
+                 'pilgrim_id' => $pilgrim->id,
+                 'trip_id' => $validatedData['trip_id'],
+                 'visa_file' => $visaFilePath,
+                 'status' => $validatedData['status'] ?? 'await',
+                 'request_number' => $validatedData['request_number'] ?? '1',
+             ]);
+
+             return $this->sendResponse(['pilgrim' => $pilgrim, 'visa' => $visa], "Pilgrim has been stored");
+         } catch (\Exception $e) {
+             return $this->sendError('Error storing pilgrim data', $e->getMessage());
+         }
+     }
+
+    public function getPilgrimProfile($pilgrimId): JsonResponse
+    {
+        try {
+            // Fetch the visa record along with the pilgrim and user relation
+            $visa = Visa::with(['pilgrim.user', 'trip'])
+                ->where('pilgrim_id', $pilgrimId)
+                ->first();
+
+            if (!$visa || !$visa->pilgrim) {
+                return $this->sendError('Pilgrim not found', 'No pilgrim found with the provided ID.');
             }
 
-            return $this->sendResponse(['pilgrim' => $pilgrim, 'visa' => $visa], "Pilgrim has been stored");
+            $pilgrim = $visa->pilgrim;
+
+            $profile = [
+                'name' => $pilgrim->user->first_name,
+                'regiment_name' => $visa->trip->regiment_name,
+                'age' => \Carbon\Carbon::parse($pilgrim->birth_date)->age,
+                'health_state' => $pilgrim->health_state,
+                'phone_number' => $pilgrim->user->phone_number,
+            ];
+
+            return $this->sendResponse($profile, "Pilgrim profile retrieved successfully");
         } catch (\Exception $e) {
-            return $this->sendError('Error storing pilgrim data', $e->getMessage());
+            return $this->sendError('Failed to retrieve pilgrim profile', $e->getMessage());
         }
     }
-
-
-//    public function retrieveVisaFile(int $visa_id): JsonResponse
-//    {
-//    $pilgrimPhotoPath = $pilgrim->passport_photo;
-//    $visaFilePath = $visa->visa_file;
-//
-//    if (!empty($pilgrimPhotoPath)) {
-//        $pilgrimPhoto = Storage::get($pilgrimPhotoPath);
-//        // Use $pilgrimPhoto as needed
-//    }
-//
-//    if (!empty($visaFilePath)) {
-//        $visaFile = Storage::get($visaFilePath);
-//        // Use $visaFile as needed
-//    }
-//        // Method body as shown above
-//    }
-
-
-
 
 }

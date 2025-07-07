@@ -32,4 +32,10 @@ class Transport extends Model
     {
         return $this->belongsTo(Office::class);
     }
+
+    
+    public function transport_trips(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TransportTrip::class);
+    }
 }

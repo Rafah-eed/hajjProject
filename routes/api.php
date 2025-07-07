@@ -1,15 +1,15 @@
-    <?php
+i <?php
 
     use App\Http\Controllers\HotelController;
     use App\Http\Controllers\PrayerController;
-    use App\Http\Middleware\CheckOfficeAndAdmin;
+use App\Http\Controllers\RateController;
+use App\Http\Middleware\CheckOfficeAndAdmin;
     use App\Http\Middleware\CheckUserRole;
     use App\Http\Controllers\AuthController;
     use App\Http\Controllers\TripController;
     use App\Http\Controllers\OfficeController;
     use App\Http\Controllers\UserController;
     use App\Http\Controllers\TransportationController;
-
 
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Route;
@@ -26,6 +26,9 @@
     */
 
     //General Routes
+
+    Route::middleware('auth:sanctum')->group(function () {
+
     Route::get('/prayer/{prayer}', [PrayerController::class, 'getPrayerByID']);
     Route::get('/trips', [TripController::class, 'index']);
     Route::get('/trip/{trip_id}', [TripController::class, 'tripById']);
@@ -38,6 +41,20 @@
     Route::get('/office/transport/{transport_id}', [TransportationController::class, 'getTransportByID']);
     Route::get('/office/transport/seatsForTransport/{transport_id}', [TransportationController::class, 'getSeatsForTransport']);
 
+
+    Route::post('/guide/rate/{guide_id}', [RateController::class, 'rateGuide']);
+    Route::post('/trip/rate/{trip_id}', [RateController::class, 'rateTrip']);
+    Route::get('/guide/getRate/{guide_id}', [RateController::class, 'getRateGuide']);
+    Route::get('/trip/getRate/{trip_id}', [RateController::class, 'getRateTrip']);
+
+
+    Route::get('/trip/getTripDetails/{trip_id}', [TripController::class, 'getTripDetails']);
+    Route::get('/trip/getTripDetailsInteractive/{trip_id}', [TripController::class, 'getTripDetailsInteractive']);
+    Route::post('/trip/reserveTrip', [TripController::class, 'reserveTrip']);
+
+    Route::post('/Users/createPilgrim', [UserController::class, 'createPilgrim']);
+
+    });
 
 
 
@@ -68,12 +85,14 @@
     $roles = ['guide', 'admin', 'superAdmin'];
     $middlewareName = implode('|', $roles);
 
-    Route::middleware(['auth:sanctum', $middlewareName])->group(function () {
+    Route::middleware(['auth:sanctum',  'CheckOfficeAndAdmin:$middlewareName'])->group(function ()  {
+
         Route::get('/getMyGuide', [UserController::class, 'getMyGuide']);
 
+        Route::get('/pilgrim/{pilgrim_id}/getPilgrimProfile', [UserController::class, 'getPilgrimProfile']);
+
+
     });
-
-
 
 
 
@@ -93,6 +112,11 @@
         Route::post('/office/{office_id}/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
 
         // Trip-related APIs
+        Route::post('/{office_id}/trip/{trip_id}/guide/{user_id}/addGuideToTrip', [TripController::class, 'addGuideToTrip'])
+            ->middleware([CheckOfficeAndAdmin::class,'RoleUsingId:guide']);
+        Route::post('/{office_id}/trip/{trip_id}/guide/{user_id}/changeGuideForTrip', [TripController::class, 'changeGuide'])
+            ->middleware([CheckOfficeAndAdmin::class,'RoleUsingId:guide']);
+
         Route::post('/{office_id}/trip/store', [TripController::class, 'store'])->middleware([CheckOfficeAndAdmin::class]);
         Route::put('/{office_id}/trip/{trip_id}', [TripController::class, 'update'])->middleware([CheckOfficeAndAdmin::class]);
         Route::delete('/{office_id}/trip/{trip_id}', [TripController::class, 'destroy'])->middleware([CheckOfficeAndAdmin::class]);

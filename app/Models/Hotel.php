@@ -35,4 +35,10 @@ class Hotel extends Model
     {
         return $this->hasMany(Room::class);
     }
+
+    
+    public function hotel_trips(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(HotelTrip::class);
+    }
 }

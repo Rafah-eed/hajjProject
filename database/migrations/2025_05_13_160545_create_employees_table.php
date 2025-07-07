@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('position_name');
             $table->decimal('salary', 10, 2);
             
-            $table->integer('employee_code')->nullable;
+            // $table->integer('employee_code')->nullable;
 
             $table->timestamps();
 

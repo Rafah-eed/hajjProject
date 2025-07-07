@@ -58,4 +58,14 @@ class Office extends Model
     {
         return $this->HasMany(Guide::class);
     }
+
+    public function transport_trips(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TransportTrip::class);
+    }
+    
+    public function hotel_trips(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(HotelTrip::class);
+    }
 }

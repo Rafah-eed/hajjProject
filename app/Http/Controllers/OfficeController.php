@@ -115,7 +115,7 @@ class OfficeController extends BaseController
         $office = Office::findOrFail($office_id);
         $user = User::findOrFail($user_id);
 
-        $randomCode = rand(10000, 99999);
+        // $randomCode = rand(10000, 99999);
 
         // Create a new employee record
         $employee = Employee::create([
@@ -123,11 +123,9 @@ class OfficeController extends BaseController
             'office_id' => $office_id,
             'position_name' => $request->position_name,
             'salary' => $request->salary,
-            'employee_code' => $randomCode,
+            // 'employee_code' => $randomCode,
         ]);
 
         return $this->sendResponse($employee, "New employee added to office successfully");
     }
     }
-
-

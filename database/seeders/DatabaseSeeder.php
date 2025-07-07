@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
         $this->call(HotelSeeder::class);
         $this->call(PrayerSeeder::class);
         $this->call(TransportSeatSeeder::class);
+        $this->call(TripInfoSeeder::class);
+        
         
 
         // \App\Models\User::factory(10)->create();
