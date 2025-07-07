@@ -69,7 +69,11 @@ class UserController extends BaseController
                         'last_name' => $pilgrim->user->last_name,
                         'email' => $pilgrim->user->email,
                         'phone_number' => $pilgrim->user->phone_number,
+                        'birth_date' => $pilgrim->birth_date,
+                        'health_state' => $pilgrim->health_state,
                         'passport_photo' => $pilgrim->passport_photo,
+                        'personal_identity' => $pilgrim->personal_identity,
+                        'personal_photo' => $pilgrim->personal_photo,
                         'created_at' => $pilgrim->created_at,
                         'updated_at' => $pilgrim->updated_at
                     ];

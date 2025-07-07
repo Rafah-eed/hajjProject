@@ -227,6 +227,12 @@ class TripController extends BaseController
                     + $transportSeat->price
                     + $room->price;
 
+
+    // Check availability
+    if (!$trip->checkAvailability($trip->enrollNum)) {
+        return $this->sendResponse(false, "Not enough spots available for this trip.", 400);
+    }
+
     // Create payment record
     $payment = Payment::create([
         'user_id' => $user_id,

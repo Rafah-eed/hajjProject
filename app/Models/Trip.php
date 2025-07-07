@@ -26,6 +26,19 @@ class Trip extends Model
         'trip_code'
     ];
 
+    protected $appends = ['enrollNum'];
+
+    public function getEnrollNumAttribute($value)
+    {
+        return $this->attributes['enrollNum'] ?? 0;
+    }
+    
+    public function checkAvailability(int $spots)
+    {
+        return $this->numOfReservations >= $spots;
+    }
+
+    
     public function visas(): HasMany
     {
         return $this->hasMany(Visa::class);
