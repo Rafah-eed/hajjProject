@@ -161,6 +161,7 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
 
         //APIS for transportation and seats
         Route::get('/transports', [TransportationController::class, 'index']);
-
+        
+        Route::get('/getAllPilgrims', [UserController::class, 'getAllPilgrims']);
 
     });

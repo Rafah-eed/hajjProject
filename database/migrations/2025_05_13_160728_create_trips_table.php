@@ -33,9 +33,6 @@ return new class extends Migration
 
             $table->foreign('office_id')->references('id')->on('offices')->onDelete('cascade');
 
-
-            // TODO: NUM OF RESERVATIONS
-
         });
     }
 
