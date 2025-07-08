@@ -270,4 +270,16 @@ class UserController extends BaseController
         }
     }
 
+
+    public function getOfficeId($user_id): JsonResponse
+{
+    $employee = Employee::where('user_id', $user_id)->first();
+
+    if (!$employee) {
+        return response()->json(['error' => 'Employee not found'], 404);
+    }
+
+    return response()->json(['office_id' => $employee->office_id]);
+}
+
 }

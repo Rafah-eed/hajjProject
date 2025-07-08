@@ -41,8 +41,10 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
     Route::get('/office/transport/{transport_id}', [TransportationController::class, 'getTransportByID']);
     Route::get('/office/transport/seatsForTransport/{transport_id}', [TransportationController::class, 'getSeatsForTransport']);
 
+        Route::get('/office/{user_id}/getOfficeId', [UserController::class, 'getOfficeId']);
 
-    Route::post('/guide/rate/{guide_id}', [RateController::class, 'rateGuide']);
+
+        Route::post('/guide/rate/{guide_id}', [RateController::class, 'rateGuide']);
     Route::post('/trip/rate/{trip_id}', [RateController::class, 'rateTrip']);
     Route::get('/guide/getRate/{guide_id}', [RateController::class, 'getRateGuide']);
     Route::get('/trip/getRate/{trip_id}', [RateController::class, 'getRateTrip']);
