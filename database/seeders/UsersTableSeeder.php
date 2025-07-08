@@ -94,5 +94,25 @@ class UsersTableSeeder extends Seeder
             ],
             
         ]);
+
+        DB::table('pilgrims')->insert([
+            [
+                'user_id' => '1',
+                'birth_date' => '1985-05-15',
+                'health_state' => 'بصحة جيدة',
+            'passport_photo' => 'public/pilgrims/686b0e79081cf.jpg',
+            'personal_identity' => 'public/pilgrims/686b0e79081cf.jpg',
+            'personal_photo' => 'public/pilgrims/686b0e79081cf.jpg',
+            ],
+            [
+                'user_id' => '2',
+                'birth_date' => '1985-07-5',
+                'health_state' => 'مرض الضغط',
+            'passport_photo' => 'public/pilgrims/686b0e79081cf.jpg',
+            'personal_identity' => 'public/pilgrims/686b0e79081cf.jpg',
+            'personal_photo' => 'public/pilgrims/686b0e79081cf.jpg',
+            ],
+            
+        ]);
     }
 }
