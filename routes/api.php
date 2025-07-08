@@ -1,4 +1,4 @@
-i <?php
+<?php
 
     use App\Http\Controllers\HotelController;
     use App\Http\Controllers\PrayerController;
@@ -88,9 +88,9 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
     Route::middleware(['auth:sanctum',  'CheckOfficeAndAdmin:$middlewareName'])->group(function ()  {
 
         Route::get('/getMyGuide', [UserController::class, 'getMyGuide']);
-        
+
         Route::get('/pilgrim/{pilgrim_id}/getPilgrimProfile', [UserController::class, 'getPilgrimProfile']);
-        
+
         Route::get('/trip/{trip_id}/pilgrims', [UserController::class, 'getPilgrimsByTripId']);
 
     });
@@ -162,7 +162,7 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
 
         //APIS for transportation and seats
         Route::get('/transports', [TransportationController::class, 'index']);
-        
+
         Route::get('/getAllPilgrims', [UserController::class, 'getAllPilgrims']);
 
     });
