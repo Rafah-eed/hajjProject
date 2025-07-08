@@ -77,7 +77,7 @@ class UsersTableSeeder extends Seeder
                 'office_id' => '1',
                 'trip_id' => '2'
             ],
-            
+
         ]);
         DB::table('employees')->insert([
             [
@@ -92,7 +92,7 @@ class UsersTableSeeder extends Seeder
                 'position_name' => 'office_person',
                 'salary' => '1000.00',
             ],
-            
+
         ]);
 
         DB::table('pilgrims')->insert([
@@ -112,7 +112,24 @@ class UsersTableSeeder extends Seeder
             'personal_identity' => 'public/pilgrims/686b0e79081cf.jpg',
             'personal_photo' => 'public/pilgrims/686b0e79081cf.jpg',
             ],
-            
+
+        ]);
+
+
+        DB::table('visas')->insert([
+            [
+                'pilgrim_id' => '1',
+                'trip_id' => '1',
+            ],
+            [
+                'pilgrim_id' => '2',
+                'trip_id' => '1',
+            ],
+            [
+                'pilgrim_id' => '1',
+                'trip_id' => '2',
+            ],
+
         ]);
     }
 }
