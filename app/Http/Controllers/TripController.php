@@ -18,6 +18,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 
+use App\Models\HotelTrip;
+use App\Models\TransportTrip;
+use App\Models\Guide;
+use App\Models\Hotel;
+use App\Models\Transport;
+
+
 class TripController extends BaseController
 {
 
@@ -249,6 +256,316 @@ class TripController extends BaseController
         'message' => 'Reservation saved successfully.',
         'invoice' => $payment
     ]);
+}
+
+
+public function getMyTrip($user_id): JsonResponse
+{
+    try {
+        // First, let's find all payment records for the user
+        $payments = Payment::where('user_id', $user_id)->get();
+
+        if ($payments->isEmpty()) {
+            return response()->json(['message' => 'No payments found for this user'], 404);
+        }
+
+        // Now, let's prepare the data we want to return
+        $result = [];
+        foreach ($payments as $payment) {
+            $result[] = [
+                'id' => $payment->id,
+                'trip_id' => $payment->trip_id,
+                'transport_seat_id' => $payment->transport_seat_id,
+                'room_id' => $payment->room_id,
+                'total_price' => $payment->total_price,
+                'status' => $payment->status,
+                'created_at' => $payment->created_at,
+            ];
+
+            // Fetch additional information for each payment
+            $trip = Trip::find($payment->trip_id);
+            if ($trip) {
+                $result[$payment->id]['trip_details'] = [
+                    'name' => $trip->regiment_name,
+                    'type' => $trip->type,
+                    'start_date' => $trip->start_date,
+                    'end_date' => $trip->end_date,
+                ];
+            }
+
+            $transportSeat = TransportSeat::find($payment->transport_seat_id);
+            if ($transportSeat) {
+                $result[$payment->id]['transport_details'] = [
+                    'seat' => $transportSeat->seat,
+                    'price' => $transportSeat->price,
+                ];
+            }
+
+            $room = Room::find($payment->room_id);
+            if ($room) {
+                $result[$payment->id]['room_details'] = [
+                    'room_type' => $room->name,
+                    'price' => $room->capacity,
+                ];
+            }
+        }
+
+        return response()->json(['data' => $result]);
+    } catch (\Exception $e) {
+        Log::error('Error fetching user trip details: ' . $e->getMessage());
+        return response()->json(['message' => 'An error occurred while fetching trip details'], 500);
+    }
+}
+
+
+public function createTripAddsOn(Request $request): JsonResponse
+{
+    try {
+        // Validate the request data
+        $validatedData = $request->validate([
+            'type' => 'required|string|max:255',
+            'regiment_name' => 'required|string|max:255',
+            'days_num_makkah' => 'required|integer|min:1',
+            'days_num_madinah' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'office_id' => 'required|exists:offices,id',
+            'numOfReservations' =>'required|integer|min:1',
+            'hotel_ids' => 'required|array',
+            'transport_ids' => 'required|array',
+            'guide_id' => 'required|exists:guides,id',
+        ]);
+
+        // Create the trip
+        $trip = Trip::create([
+            'type' => $validatedData['type'],
+            'regiment_name' => $validatedData['regiment_name'],
+            'days_num_makkah' => $validatedData['days_num_makkah'],
+            'days_num_madinah' => $validatedData['days_num_madinah'],
+            'price' => $validatedData['price'],
+            'start_date' => $validatedData['start_date'],
+            'end_date' => $validatedData['end_date'],
+            'office_id' => $validatedData['office_id'],
+            'is_active' => true,
+            'numOfReservations' => $validatedData['numOfReservations'],
+            'enrollNum' => 0,
+            'trip_code' => Str::padLeft(rand(100000, 999999), 5, '0'),
+        ]);
+
+        // Add hotels to the trip
+        foreach ($validatedData['hotel_ids'] as $hotelId) {
+            HotelTrip::create([
+                'trip_id' => $trip->id,
+                'hotel_id' => $hotelId,
+                'office_id' => $validatedData['office_id'],
+
+            ]);
+        }
+
+        // Add transports to the trip
+        foreach ($validatedData['transport_ids'] as $transportId) {
+            TransportTrip::create([
+                'trip_id' => $trip->id,
+                'transport_id' => $transportId,
+                'office_id' => $validatedData['office_id'],
+            ]);
+        }
+
+        Guide::create([
+            'user_id' => $validatedData['guide_id'], // fix here
+            'office_id' => $validatedData['office_id'],
+            'trip_id' => $trip->id,
+        ]);
+
+// Fetch the guide
+        $guide = Guide::where('trip_id', $trip->id)->first();
+
+        $guideData = null;
+        if ($guide) {
+            $user = User::find($guide->user_id);
+            $fullName = $user ? ($user->first_name . ' ' . $user->last_name) : '';
+            $guideData = [
+                'id' => $guide->user_id,
+                'name' => $fullName ?? '',
+            ];
+        }
+
+// Prepare the response data
+        $responseData = [
+            'message' => 'Trip created successfully',
+            'trip' => [
+                'id' => $trip->id,
+                'type' => $trip->type,
+                'regiment_name' => $trip->regiment_name,
+                'days_num_makkah' => $trip->days_num_makkah,
+                'days_num_madinah' => $trip->days_num_madinah,
+                'price' => $trip->price,
+                'start_date' => $trip->start_date,
+                'end_date' => $trip->end_date,
+                'office_id' => $trip->office_id,
+                'is_active' => $trip->is_active,
+                'numOfReservations' => $trip->numOfReservations,
+                'enrollNum' => $trip->enrollNum,
+                'trip_code' => $trip->trip_code,
+            ],
+            'hotels' => HotelTrip::where('trip_id', $trip->id)
+                ->get()
+                ->map(function($ht) {
+                    $hotel = Hotel::find($ht->hotel_id);
+                    return [
+                        'id' => $ht->hotel_id,
+                        'name' => optional($hotel)->hotel_name ?? '',
+                        'rate' => optional($hotel)->rate ?? '',
+                        'address' => optional($hotel)->address ?? '',
+                    ];
+                }),
+            'transports' => TransportTrip::where('trip_id', $trip->id)
+                ->get()
+                ->map(function($tt) {
+                    $transport = Transport::find($tt->transport_id);
+                    return [
+                        'id' => $tt->transport_id,
+                        'transport_type' => optional($transport)->transport_type ?? '',
+                        'company_name' => optional($transport)->company_name ?? '',
+                        'description' => optional($transport)->description ?? '',
+                    ];
+                }),
+            'guide' => $guideData, // add guide info here
+        ];
+
+        return response()->json($responseData, 201);
+
+    } catch (\Exception $e) {
+        Log::error('Error creating trip with add-ons: ' . $e->getMessage());
+        return response()->json(['message' => 'An error occurred while creating the trip'], 500);
+    }
+}
+
+public function updateTripAddsOn(Request $request, $office_id, $trip_id): JsonResponse
+{
+    Log::info("Received trip_id: " . $trip_id);
+    try {
+        // Validate request data
+        $validatedData = $request->validate([
+            'type' => 'required|string|max:255',
+            'regiment_name' => 'required|string|max:255',
+            'days_num_makkah' => 'required|integer|min:1',
+            'days_num_madinah' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'office_id' => 'required|exists:offices,id',
+            'numOfReservations' => 'required|integer|min:1',
+            'hotel_ids' => 'required|array',
+            'transport_ids' => 'required|array',
+            'guide_id' => 'required|exists:guides,id',
+        ]);
+
+        // Find existing trip
+        $trip = Trip::findOrFail($trip_id);
+        Log::info("Updating trip with ID: " . $trip_id);
+        // Update trip details
+        $trip->update([
+            'type' => $validatedData['type'],
+            'regiment_name' => $validatedData['regiment_name'],
+            'days_num_makkah' => $validatedData['days_num_makkah'],
+            'days_num_madinah' => $validatedData['days_num_madinah'],
+            'price' => $validatedData['price'],
+            'start_date' => $validatedData['start_date'],
+            'end_date' => $validatedData['end_date'],
+            'office_id' => $validatedData['office_id'],
+            'numOfReservations' => $validatedData['numOfReservations'],
+        ]);
+
+        // Update hotels: Remove old, add new
+        HotelTrip::where('trip_id', $trip->id)->delete();
+        foreach ($validatedData['hotel_ids'] as $hotelId) {
+            HotelTrip::create([
+                'trip_id' => $trip->id,
+                'hotel_id' => $hotelId,
+                'office_id' => $validatedData['office_id'],
+            ]);
+        }
+
+        // Update transports: Remove old, add new
+        TransportTrip::where('trip_id', $trip->id)->delete();
+        foreach ($validatedData['transport_ids'] as $transportId) {
+            TransportTrip::create([
+                'trip_id' => $trip->id,
+                'transport_id' => $transportId,
+                'office_id' => $validatedData['office_id'],
+            ]);
+        }
+
+        // Update guide
+        // You may want to update or reassign guide, depending on logic
+        Guide::updateOrCreate(
+            ['trip_id' => $trip->id],
+            [
+                'user_id' => $validatedData['guide_id'],
+                'office_id' => $validatedData['office_id'],
+            ]
+        );
+        $guide = Guide::where('trip_id', $trip->id)->first();
+
+        $guideData = null;
+        if ($guide) {
+            $user = User::find($guide->user_id);
+            $fullName = $user ? ($user->first_name . ' ' . $user->last_name) : '';
+            $guideData = [
+                'id' => $guide->user_id,
+                'name' => $fullName ?? '',
+            ];
+        }
+        // Prepare response similar to create
+        $responseData = [
+            'message' => 'Trip updated successfully',
+            'trip' => [
+                'id' => $trip->id,
+                'type' => $trip->type,
+                'regiment_name' => $trip->regiment_name,
+                'days_num_makkah' => $trip->days_num_makkah,
+                'days_num_madinah' => $trip->days_num_madinah,
+                'price' => $trip->price,
+                'start_date' => $trip->start_date,
+                'end_date' => $trip->end_date,
+                'office_id' => $trip->office_id,
+                'is_active' => $trip->is_active,
+                'numOfReservations' => $trip->numOfReservations,
+                'enrollNum' => $trip->enrollNum,
+                'trip_code' => $trip->trip_code,
+            ],
+            'hotels' => HotelTrip::where('trip_id', $trip->id)
+                ->get()
+                ->map(function($ht) {
+                    $hotel = Hotel::find($ht->hotel_id);
+                    return [
+                        'id' => $ht->hotel_id,
+                        'name' => optional($hotel)->hotel_name ?? '',
+                        'rate' => optional($hotel)->rate ?? '',
+                        'address' => optional($hotel)->address ?? '',
+                    ];
+                }),
+            'transports' => TransportTrip::where('trip_id', $trip->id)
+                ->get()
+                ->map(function($tt) {
+                    $transport = Transport::find($tt->transport_id);
+                    return [
+                        'id' => $tt->transport_id,
+                        'transport_type' => optional($transport)->transport_type ?? '',
+                        'company_name' => optional($transport)->company_name ?? '',
+                        'description' => optional($transport)->description ?? '',
+                    ];
+                }),
+            'guide' => $guideData, // add guide info here
+        ];
+
+        return response()->json($responseData, 201);
+    } catch (\Exception $e) {
+        Log::error('Error updating trip: ' . $e->getMessage());
+        return response()->json(['message' => 'An error occurred while updating the trip'], 500);
+    }
 }
 
 }

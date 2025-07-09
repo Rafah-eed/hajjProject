@@ -56,6 +56,9 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
 
     Route::post('/Users/createPilgrim', [UserController::class, 'createPilgrim']);
 
+    Route::get('/trip/{user_id}/getMyTrip', [TripController::class, 'getMyTrip']);
+
+
     });
 
 
@@ -141,6 +144,8 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
         Route::delete('/office/{office_id}/transport_seat/{transport_seat_id}', [TransportationController::class, 'destroySeat'])->middleware([CheckOfficeAndAdmin::class]);
 
 
+        Route::post('/trip/{office_id}/createTripAddsOn', [TripController::class, 'createTripAddsOn']);
+        Route::post('/trip/{office_id}/updateTripAddsOn/{trip_id}', [TripController::class, 'updateTripAddsOn']);
 
     });
 
