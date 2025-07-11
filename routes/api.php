@@ -58,6 +58,7 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
 
     Route::get('/trip/{user_id}/getMyTrip', [TripController::class, 'getMyTrip']);
 
+    Route::post('/office/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
 
     });
 
@@ -115,7 +116,6 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
     Route::middleware(['auth:sanctum', 'CheckOfficeAndAdmin:$middlewareNameAdmin'])->group(function () {
         // APIs for office operations
         Route::get('/office/{office_id}', [OfficeController::class, 'findOfficeById']);
-        Route::post('/office/{office_id}/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
 
         // Trip-related APIs
         Route::post('/{office_id}/trip/{trip_id}/guide/{user_id}/addGuideToTrip', [TripController::class, 'addGuideToTrip'])

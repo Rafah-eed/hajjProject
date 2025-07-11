@@ -10,6 +10,7 @@ use App\Models\Office;
 use App\Models\User;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 
 class OfficeController extends BaseController
@@ -37,47 +38,59 @@ class OfficeController extends BaseController
 
     }
 
-    public function store(OfficeStoreRequest $request): JsonResponse
 
+
+    public function store(OfficeStoreRequest $request): JsonResponse
     {
         try {
-        $validatedData = $request->validated();
+            $validatedData = $request->validated();
 
-        if (empty($validatedData['name'])) {
-            return $this->sendResponse(false, "Name is required.", 400);
+            if (empty($validatedData['name'])) {
+                return $this->sendResponse(false, "Name is required.", 400);
+            }
+
+            // Generate random email
+            $email = Str::lower(str_replace(' ', '_', $validatedData['name']) . '@example.com');
+
+            // Generate random password
+            $password = Str::random(10);
+
+            $validatedData['office_email'] = $email;
+            $validatedData['office_password'] = $password;
+
+            $office = new Office();
+            $office->fill($validatedData);
+            $office->save();
+
+            return $this->sendResponse($office, "Office has been created successfully with auto-generated email and password");
+        } catch (\Exception $e) {
+            Log::error('Error creating office: ' . $e->getMessage());
+            return $this->sendResponse(false, "An error occurred while creating the office", 500);
         }
-
-        $office = new Office();
-        $office->fill($validatedData);
-        $office->save();
-
-        return $this->sendResponse($office, "Office has been created successfully");
-    } catch (\Exception $e) {
-        Log::error('Error creating office: ' . $e->getMessage());
-        return $this->sendResponse(false, "An error occurred while creating the office", 500);
     }
 
-    }
 
     public function update(Request $request, int $office_id): JsonResponse
     {
-
         try {
             $office = $this->findOfficeById($office_id);
             if (!$office) {
                 return $this->sendResponse(false, "Office not found.", 404);
             }
 
-            // Handle partial updates
+            $validatedData = $request->validate([
+                'address' => 'nullable|string|max:255',
+                'name' => 'nullable|string|max:255',
+                'license_number' => 'nullable|numeric',
+                'office_email' => ['required', 'email', 'max:255'],
+                'office_password' => ['nullable', 'min:8'],
+            ]);
+
             $updates = [];
-            if ($request['address']) {
-                $updates['address'] = $request['address'];
-            }
-            if ($request['name']) {
-                $updates['name'] = $request['name'];
-            }
-            if ($request['license_number']) {
-                $updates['license_number'] = $request['license_number'];
+            foreach ($validatedData as $key => $value) {
+                if (!is_null($value)) {
+                    $updates[$key] = $value;
+                }
             }
 
             if (!empty($updates)) {

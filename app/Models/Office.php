@@ -14,7 +14,9 @@ class Office extends Model
     protected $fillable = [
         'name',
         'address',
-        'license_number'
+        'license_number',
+        'office_email',
+        'office_password'
     ];
 
     /**
@@ -63,7 +65,7 @@ class Office extends Model
     {
         return $this->hasMany(TransportTrip::class);
     }
-    
+
     public function hotel_trips(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(HotelTrip::class);

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('position_name');
             $table->decimal('salary', 10, 2);
-            
+            $table->boolean('is_activated') ->default(false);
+
             // $table->integer('employee_code')->nullable;
 
             $table->timestamps();

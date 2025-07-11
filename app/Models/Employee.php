@@ -15,7 +15,7 @@ class Employee extends Model
         'user_id',
         'position_name',
         'salary',
-
+        'is_activated'
     ];
 
     /**

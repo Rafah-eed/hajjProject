@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('address');
             $table->integer('license_number');
+            $table->string('office_email')->unique();
+            $table->string('office_password');
             $table->timestamps();
         });
     }
