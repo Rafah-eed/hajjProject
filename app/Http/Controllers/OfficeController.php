@@ -86,6 +86,7 @@ class OfficeController extends BaseController
                 'office_password' => ['nullable', 'min:8'],
             ]);
 
+
             $updates = [];
             foreach ($validatedData as $key => $value) {
                 if (!is_null($value)) {
@@ -121,24 +122,48 @@ class OfficeController extends BaseController
     }
 
     public function addEmployeeToOffice(Request $request): JsonResponse
-    {
-        $office_id = $request->input('office_id');
-        $user_id = $request->input('user_id');
+{
+    $office_id = $request->input('office_id');
+    $user_id = $request->input('user_id');
 
-        $office = Office::findOrFail($office_id);
-        $user = User::findOrFail($user_id);
+    $office = Office::findOrFail($office_id);
+    $user = User::findOrFail($user_id);
 
-        // $randomCode = rand(10000, 99999);
-
-        // Create a new employee record
-        $employee = Employee::create([
-            'user_id' => $user_id,
-            'office_id' => $office_id,
-            'position_name' => $request->position_name,
-            'salary' => $request->salary,
-            // 'employee_code' => $randomCode,
-        ]);
-
-        return $this->sendResponse($employee, "New employee added to office successfully");
+    // Validate office credentials
+    if (!$this->validateOfficeCredentials($request)) {
+        return $this->sendResponse(false, "Invalid office credentials", 401);
     }
+
+    // Create a new employee record
+    $employee = Employee::create([
+        'user_id' => $user_id,
+        'office_id' => $office_id,
+        'position_name' => $request->position_name,
+        'salary' => $request->salary,
+    ]);
+
+    return $this->sendResponse($employee, "New employee added to office successfully");
+}
+
+private function validateOfficeCredentials(Request $request)
+{
+    $validatedData = $request->validate([
+        'office_email' => ['required', 'email', 'max:255'],
+        'office_password' => ['required', 'min:8'],
+    ]);
+
+    $officeCredentials = Office::where('office_email', $validatedData['office_email'])
+        ->where('office_password', $validatedData['office_password'])
+        ->first();
+
+    return !is_null($officeCredentials);
+}
+
+public function getEmployeesOfOffice(int $office_id): JsonResponse
+{
+    $office = Office::with('employees')->findOrFail($office_id);
+    $employees = $office->employees;
+
+    return $this->sendResponse($employees, "Employees retrieved successfully");
+}
     }
