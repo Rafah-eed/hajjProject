@@ -26,7 +26,7 @@ class Office extends Model
      */
 
 
-    public function empolyees(): HasMany
+    public function employees(): HasMany
     {
         return $this->hasMany(Employee::class);
     }

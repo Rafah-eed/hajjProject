@@ -54,6 +54,7 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
     Route::get('/trip/getTripDetailsInteractive/{trip_id}', [TripController::class, 'getTripDetailsInteractive']);
     Route::post('/trip/reserveTrip', [TripController::class, 'reserveTrip']);
 
+
     Route::post('/Users/createPilgrim', [UserController::class, 'createPilgrim']);
 
     Route::get('/trip/{user_id}/getMyTrip', [TripController::class, 'getMyTrip']);
@@ -116,8 +117,13 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
     Route::middleware(['auth:sanctum', 'CheckOfficeAndAdmin:$middlewareNameAdmin'])->group(function () {
         // APIs for office operations
         Route::get('/office/{office_id}', [OfficeController::class, 'findOfficeById']);
-
+        Route::get('/office/{office_id}/employees', [App\Http\Controllers\OfficeController::class, 'getEmployeesOfOffice']);
         // Trip-related APIs
+
+
+
+         Route::get('/office/{office_id}/getAllGuidesForOffice', [App\Http\Controllers\OfficeController::class, 'getAllGuidesForOffice']);
+        
         Route::post('/{office_id}/trip/{trip_id}/guide/{user_id}/addGuideToTrip', [TripController::class, 'addGuideToTrip'])
             ->middleware([CheckOfficeAndAdmin::class,'RoleUsingId:guide']);
         Route::post('/{office_id}/trip/{trip_id}/guide/{user_id}/changeGuideForTrip', [TripController::class, 'changeGuide'])

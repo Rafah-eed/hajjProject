@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\BaseController as BaseController;
 use App\Models\Transport;
 use App\Models\TransportSeat;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class TransportationController extends BaseController
 {
@@ -22,7 +24,7 @@ class TransportationController extends BaseController
         $transports = Transport::all();
 
         if ( is_null($transports))
-            return $this->sendResponse(false,  "No data available" ,204);
+            return $this->sendResponse(false,  "No data available" );
 
         return $this->sendResponse($transports, "Transports has been retrieved");
 
@@ -55,9 +57,9 @@ class TransportationController extends BaseController
             Log::info("After saving:", ['result' => $transport]);
 
             return $this->sendResponse($transport, "transport has been added successfully");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error adding transport: ' . $e->getMessage());
-            return $this->sendResponse(false, "An error occurred while adding the transport", 500);
+            return $this->sendResponse(false, "An error occurred while adding the transport");
         }
     }
 
@@ -75,26 +77,24 @@ class TransportationController extends BaseController
             DB::enableQueryLog();
 
             $validatedData = $request->validate([
-                'office_id' => 'required|exists:offices,id',
                 'company_name' => 'required|string|max:255',
                 'description' => 'nullable|string|max:500',
                 'transport_type' => 'required|string|max:50',
             ]);
 
             // Compare office_id from request with one in URL
-            $requestedOfficeId = $validatedData['office_id'];
             $urlOfficeId = $this->getOfficeIdFromUrl($id);
 
-            if ($requestedOfficeId !== $urlOfficeId) {
-                return $this->sendResponse(false, "Office ID in request does not match the one in URL.", 400);
-            }
-
             $transport = Transport::findOrFail($id);
+
+            if ($transport->office_id != $urlOfficeId){
+                return $this->sendResponse(false, "You are not authorized to update the seat");
+            }
 
             Log::info("Before saving:", ['transport' => $transport]);
 
             $transport->update([
-                'office_id' => $validatedData['office_id'],
+                'office_id' => $urlOfficeId,
                 'company_name' => $validatedData['company_name'] ?? null,
                 'description' => $validatedData['description'] ?? null,
                 'transport_type' => $validatedData['transport_type'] ?? null,
@@ -103,9 +103,9 @@ class TransportationController extends BaseController
             Log::info("After saving:", ['result' => $transport]);
 
             return $this->sendResponse($transport, "transport updated successfully");
-        } catch (\Exception $e) {
-            Log::error('Error updating prayer: ' . $e->getMessage());
-            return $this->sendResponse(false, "An error occurred while updating the transport", 500);
+        } catch (Exception $e) {
+            Log::error('Error updating transport: ' . $e->getMessage());
+            return $this->sendResponse(false, "An error occurred while updating the transport");
         }
     }
 
@@ -115,7 +115,7 @@ class TransportationController extends BaseController
         $routeParams = app()->router->current()->parameters();
 
         if (!isset($routeParams['office_id'])) {
-            throw new \InvalidArgumentException("Office ID not found in URL parameters.");
+            throw new InvalidArgumentException("Office ID not found in URL parameters.");
         }
 
         return intval($routeParams['office_id']);
@@ -191,7 +191,7 @@ class TransportationController extends BaseController
             Log::info("After saving:", ['result' => $seat]);
 
             return $this->sendResponse($seat, "seat has been added successfully");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error adding seat: ' . $e->getMessage());
             return $this->sendResponse(false, "An error occurred while adding the seat", 500);
         }
@@ -282,7 +282,7 @@ class TransportationController extends BaseController
             Log::info("Returning seats data");
             return $this->sendResponse($seats, "All seats for this transport have been retrieved");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error getting seat: ' . $e->getMessage());
             Log::error('Error stack trace:', (array)$e->getTraceAsString());
             return $this->sendResponse(false, "An error occurred while getting the seat", 500);
