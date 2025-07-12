@@ -243,16 +243,31 @@ class TransportationController extends BaseController
      * @param $transport_seat_id
      * @return JsonResponse
      */
-    public function destroySeat($transport_seat_id): JsonResponse
+        public function destroySeat($transport_seat_id): JsonResponse
     {
-        $seat = TransportSeat::findOrFail($transport_seat_id);
+        try {
+            $seatExists = TransportSeat::where('id', $transport_seat_id)->exists();
 
-        $seat->delete();
+            if (!$seatExists) {
+                return $this->sendResponse(null, "Seat does not exist");
+            }
 
-        return $this->sendResponse($seat, "seat has been deleted");
+            $seat = TransportSeat::findOrFail($transport_seat_id);
+            
+            // Log the seat details before deletion
+            Log::info("Attempting to delete transport seat", [
+                'seat_id' => $transport_seat_id,
+                'seat_data' => $seat->toArray()
+            ]);
 
+            $seat->delete();
+            return $this->sendResponse($seat, "seat has been deleted");
+        } catch (\Exception $e) {
+            // Log the error details
+            Log::error('Error deleting transport seat', ['error' => $e->getMessage(), 'seat_id' => $transport_seat_id]);
+            return $this->sendError('Failed to delete transport seat', $e->getMessage());
+        }
     }
-
 
     /**
      * Remove the specified resource from storage.

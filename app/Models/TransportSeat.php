@@ -12,6 +12,8 @@ class TransportSeat extends Model
 
     protected $fillable = ['transport_id', 'seat', 'price'];
 
+     protected $primaryKey = 'id';
+     
     public function payments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Payment::class);
@@ -25,5 +27,19 @@ class TransportSeat extends Model
     public function transport(): BelongsTo
     {
         return $this->belongsTo(Transport::class);
+    }
+
+        protected $softDelete = true;
+
+        
+    public function delete()
+    {
+        parent::delete();
+        $this->update(['deleted_at' => Carbon::now()]);
+    }
+
+    public static function find($id)
+    {
+        return static::withTrashed()->find($id);
     }
 }

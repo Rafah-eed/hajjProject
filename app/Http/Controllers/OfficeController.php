@@ -180,14 +180,19 @@ public function getAllGuidesForOffice(int $office_id): JsonResponse
             return response()->json(['message' => 'No guides found for this office'], 404);
         }
 
-        $guides = Guide::join('users', 'guides.user_id', '=', 'users.id')
-                       ->where('guides.office_id', $office_id)
-                       ->select(
-    'guides.id',
-    'users.id as user_id',
-    DB::raw("CONCAT(users.first_name, ' ', users.last_name) as full_name")
-)
-                       ->get();
+           $guides = Guide::query()
+            ->join('users', 'guides.user_id', '=', 'users.id')
+            ->where('guides.office_id', $office_id)
+            ->select(
+                DB::raw('DISTINCT users.id as user_id'),
+                DB::raw('guides.id as guide_id'),
+                DB::raw("CONCAT(users.first_name, ' ', users.last_name) as full_name")
+            )
+            ->orderBy('users.id', 'asc')
+            ->orderBy('guides.id', 'asc')
+            ->groupBy('users.id', 'guides.id', 'full_name')
+            ->get();
+
 
         return $this->sendResponse($guides, "All guides for the office have been retrieved successfully");
 
