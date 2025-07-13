@@ -305,6 +305,25 @@ class TransportationController extends BaseController
     }
 
 
+public function getTransportsForOffice(int $office_id): JsonResponse
+{
+    try {
+        $transports = Transport::query()
+            ->whereHas('office', function ($query) use ($office_id) {
+                $query->where('id', $office_id);
+            })
+            ->get();
 
+        if (!$transports->isNotEmpty()) {
+            return response()->json(['message' => 'No transports found for this office'], 404);
+        }
+
+        return $this->sendResponse($transports, "All transports for the office have been retrieved successfully");
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching transports for office', ['error' => $e->getMessage()]);
+        return $this->sendError('Error fetching transports for office', $e->getMessage());
+    }
+}
 
 }

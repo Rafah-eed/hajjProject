@@ -41,4 +41,9 @@ class Hotel extends Model
     {
         return $this->hasMany(HotelTrip::class);
     }
+
+    public function office(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Office::class);
+    }
 }

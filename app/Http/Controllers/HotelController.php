@@ -198,5 +198,24 @@ class HotelController extends BaseController
         }
     }
 
+public function getHotelsForOffice(int $office_id): JsonResponse
+{
+    try {
+        $hotels = Hotel::query()
+            ->whereHas('office', function ($query) use ($office_id) {
+                $query->where('id', $office_id);
+            })
+            ->get();
 
+        if (!$hotels->isNotEmpty()) {
+            return response()->json(['message' => 'No hotels found for this office'], 404);
+        }
+
+        return $this->sendResponse($hotels, "All hotels for the office have been retrieved successfully");
+
+    } catch (\Exception $e) {
+        Log::error('Error fetching hotels for office', ['error' => $e->getMessage()]);
+        return $this->sendError('Error fetching hotels for office', $e->getMessage());
+    }
+}
 }

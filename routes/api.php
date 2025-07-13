@@ -61,6 +61,10 @@ use App\Http\Middleware\CheckOfficeAndAdmin;
 
     Route::post('/office/addEmployeeToOffice', [OfficeController::class, 'addEmployeeToOffice']);
 
+    Route::get('/office/{office_id}/transports', [TransportationController::class, 'getTransportsForOffice']);
+    
+    Route::get('/office/{office_id}/hotels', [HotelController::class, 'getHotelsForOffice']);
+    
     });
 
 

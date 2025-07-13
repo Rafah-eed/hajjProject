@@ -70,4 +70,9 @@ class Office extends Model
     {
         return $this->hasMany(HotelTrip::class);
     }
+
+    public function hotels(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Hotel::class);
+    }
 }
